@@ -1,0 +1,98 @@
+import collections
+
+class search:
+
+    def __init__(self):
+        pass
+
+    def dfs(self, graph, start, target, visited=None):
+        if visited is None:  # проверяем пустоту посешенный ход
+            visited = set()  # инициализируем неповторяемый массив посещаемых ходов
+        if start == target:
+            return [target]
+        visited.add(start)  # добовляем вершину
+        # print(start, end=" ")  # отображаем ее
+        for next in graph[start] - visited:  # цикл чтобы поторялось действие
+            path = self.dfs(graph, next, target, visited)  # вызываем функцию опять (рекурсивная функцию)
+            if path is not None:
+                return [start] + path
+        return None
+
+    def bfs(self, graph, start, target):
+        # Track the visited and unvisited nodes using queue
+        seen, queue = set([start]), collections.deque([start])  #инициализируем
+        path = {start: [start]}
+        while queue:    #проходим пока перемение не пустое
+            vertex = queue.popleft()    #убовляем с лево в перемение
+            for node in graph[vertex]:
+                if node not in seen:
+                    seen.add(node)
+                    queue.append(node)
+                    path[node] = path[vertex] + [node]
+        return path[target]
+
+    def equalCosts(self, graph, start, target):
+        seen, queue = {start: 0}, collections.deque([start])  #seen - массив просмотренных вершин (ключ: наименование вершины, значение: наилучшая длина пути), queue - очередь смежных вершин
+        path = {start: [start]} #path - массив для каждой вершины где содержится наилучший путь
+        while queue:
+            vertex = queue.popleft()    #извлекаем очередную вершину из очереди
+            for node in graph[vertex]:
+                pathLength = seen[vertex]+1 # длина пути в вершину node через вершину vertex
+                if node not in seen: # добаляем вершину в очередь если она еще не была просмотрена
+                    queue.append(node)
+                if (node not in seen) or (pathLength < seen[node]): # если найденый путь короче уже записанного для вершины (или она еще не была посещена)
+                    seen[node] = pathLength # добавляем вершину в список посещенных и записываем текущую длину пути
+                    path[node] = path[vertex] + [node] # записываем путь на основе пути для вершины vertex
+        return path[target]
+
+    def gradient(self, graph, start, target):
+        self.start = start
+        self.target = target
+
+        def getXY(node):
+            (x, y) = node.split(':')
+            return (int(x), int(y))
+
+        def cost(node):
+            (x, y) = getXY(node)
+            (targetX, targetY) = getXY(self.target)
+            cost = max(abs(x-targetX), abs(y-targetY))
+            print("cost[{0}, {1}] = {2}".format(x, y, cost))
+            return cost
+
+
+        def dfs(graph, node=None, visited=None):
+            if visited is None:
+                visited = set()
+            if node is None:
+                node = self.start
+            if node == self.target:
+                return [node]
+            visited.add(node)
+
+            for next in sorted(graph[node] - visited, key=cost):
+                path = dfs(graph, next, visited)
+                if path is not None:
+                    return [node] + path
+
+            return None
+
+        return dfs(graph)
+
+
+
+
+
+# Более мощные алгоритмы поиска используют априорные
+# знания человека – эксперта об особенностях решения задач в заданной предметной
+# области. В эвристических программах эти знания реализуются с помощью оценочных
+# функций. Оценочной функцией называется функция от n аргументов, представляющие
+# собой некоторые числовые (или приведенные к числовым) параметры предметной
+# области и вычисляющая меру близости любой из текущих ситуаций к целевой. Можно
+# представить значения оценочной функции как точки N – мерного пространства.
+
+# Алгоритм заключается в использовании правила
+# максимизации с опорой на поиск в глубину. При этом, возможные ходы выбираются
+# не случайным образом, а в соответствии со значениями оценочной функцией. То
+# есть сначала выбирается наилучший ход, а потом другой, оцененный ранее как
+# менее предпочтительный.
