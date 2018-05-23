@@ -17,6 +17,9 @@ class labyrinth:
         self.labyrinth = {}
         self.size = size
 
+    def invertDirection(self, direction):
+        return (direction + 1) % 4 + 1
+
     def _addEdge(self, x, y, direction):
         x2 = x + self.directions[direction][0]
         y2 = y + self.directions[direction][1]
@@ -27,7 +30,7 @@ class labyrinth:
         if node2 not in self.labyrinth:
             self.labyrinth[node2] = {}
         self.labyrinth[node1][direction] = True
-        self.labyrinth[node2][(direction + 1) % 4 + 1] = True
+        self.labyrinth[node2][self.invertDirection(direction)] = True
         return True
 
     def generate(self):
@@ -52,7 +55,9 @@ class labyrinth:
             for d in self.labyrinth[node]:
                 (x, y) = node.split(':')
                 subNode = str(int(x) + self.directions[d][0])+':'+str(int(y) + self.directions[d][1])
-                g.addEdge(node, subNode)
+                g.addNode(subNode)
+                g.addEdge(node, subNode, d)
+                g.addEdge(subNode, node, self.invertDirection(d))
         return g
 
     def show(self):

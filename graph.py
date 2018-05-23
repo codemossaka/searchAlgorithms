@@ -12,36 +12,45 @@ class graph:
 
     def addNode(self, node):
         if node not in self.nodes:
-            self.nodes[node] = set()
+            self.nodes[node] = []
 
     # def removeNode(node):
     #	if node in self.nodes:
     #		del self.nodes[node]
 
-    def addEdge(self, nodeFrom, nodeTo):
+    def addEdge(self, nodeFrom, nodeTo, direction):
         if nodeFrom == nodeTo:
             raise Exception('Error addEdge: "nodeTo" must differ from "nodeFrom"')
 
         self.addNode(nodeFrom)
-        self.addNode(nodeTo)
+        # self.addNode(nodeTo)
 
         # if nodeFrom not in self.nodes:
         #	raise Exception('Error addEdge: node '+nodeFrom+' not exist')
         # if nodeTo not in self.nodes:
         #	raise Exception('Error addEdge: node '+nodeTo+' not exist')
 
-        if nodeTo not in self.nodes[nodeFrom]:
-            self.nodes[nodeFrom].add(nodeTo) # [nodeTo] = True
-        if nodeFrom not in self.nodes[nodeTo]:
-            self.nodes[nodeTo].add(nodeFrom) # [nodeFrom] = True
+        # if nodeTo not in self.nodes[nodeFrom]:
+        self.nodes[nodeFrom].append({'node': nodeTo, 'direction': direction}) # [nodeTo] = True
+        # if nodeFrom not in self.nodes[nodeTo]:
+        #    self.nodes[nodeTo].add(nodeFrom) # [nodeFrom] = True
 
     # def removeEdge(nodeFrom, nodeTo):
 
+    def getMoves(self, node):
+        return self.nodes[node]
+
     def show(self):
+        directions = {
+            1: 'UP',
+            2: 'RIGHT',
+            3: 'DOWN',
+            4: 'LEFT'
+        }
         print("{")
         for node in self.nodes:
             subNodes = []
             for subNode in self.nodes[node]:
-                subNodes.append(subNode)
-            print(    "'"+node+"': ["+str.join(", ", (subNodes))+"]")
+                subNodes.append(directions[subNode['direction']]+' '+subNode['node'])
+            print("'"+node+"': ["+str.join(", ", (subNodes))+"]")
         print("}")
