@@ -8,8 +8,12 @@ class search:
     def dfs(self, graph, start, target, visited=None):
         if visited is None:  # проверяем пустоту посешенный ход
             visited = set()  # инициализируем неповторяемый массив посещаемых ходов
-        if start == target:
+        if self.isTarget(start, target):
+            print('Цель достигнута')
             return []
+        else:
+            print('Цель не достигнута')
+
         visited.add(start)  # добовляем вершину
         # print(start, end=" ")  # отображаем ее
         for move in graph.getMoves(start):  # цикл чтобы поторялось действие
@@ -21,6 +25,9 @@ class search:
                 return [move['direction']] + path
         return None
 
+    def isTarget(self,node, target):
+        return node == target
+        
     def bfs(self, graph, start, target):
         # Track the visited and unvisited nodes using queue
         seen, queue = set([start]), collections.deque([start])  #инициализируем
@@ -35,28 +42,28 @@ class search:
                     path[node] = path[vertex] + [move['direction']]
         return path[target]
 
-    def bfst(self, graph, start, target):
+    # def bfst(self, graph, start, target):
 
-        def get_path(vertex):
-            curr_vertex = vertex
-            parents_data_list = collections.deque([vertex.node])
-            while curr_vertex.parent:
-                curr_vertex = curr_vertex.parent
-                parents_data_list.appendleft(curr_vertex.node)
-            print(list(parents_data_list))
-            return list(parents_data_list)
+    #     def get_path(vertex):
+    #         curr_vertex = vertex
+    #         parents_data_list = collections.deque([vertex['node']])
+    #         while curr_vertex.parent:
+    #             curr_vertex = curr_vertex.parent
+    #             parents_data_list.appendleft(curr_vertex['node'])
+    #         print(list(parents_data_list))
+    #         return list(parents_data_list)
 
-        Vertex = collections.namedtuple('Vertex', ['node', 'parent'])
+    #     Vertex = collections.namedtuple('Vertex', ['node', 'parent'])
 
-        queue = collections.deque([Vertex(start, None)])  # инициализируем
+    #     queue = collections.deque([Vertex(start, None)])  # инициализируем
 
-        while True:
-            vertex = queue.popleft()  # убовляем с лево в перемение
-            for move in graph.getMoves(vertex.node):
-                next_vertex = Vertex(move['node'], vertex)
-                if next_vertex.node == target:
-                    return get_path(next_vertex)
-                queue.append(next_vertex)
+    #     while True:
+    #         vertex = queue.popleft()  # убовляем с лево в перемение
+    #         for move in graph.getMoves(vertex['node']):
+    #             next_vertex = Vertex(move['node'], vertex)
+    #             if next_vertex['node'] == target:
+    #                 return get_path(next_vertex)
+    #             queue.append(next_vertex)
 
 
     def equalCosts(self, graph, start, target):
@@ -83,7 +90,7 @@ class search:
             return (int(x), int(y))
 
         def cost(node):
-            (x, y) = getXY(node)
+            (x, y) = getXY(node['node'])
             (targetX, targetY) = getXY(self.target)
             cost = max(abs(x-targetX), abs(y-targetY))
             print("cost[{0}, {1}] = {2}".format(x, y, cost))
@@ -95,12 +102,15 @@ class search:
                 visited = set()
             if node is None:
                 node = self.start
-            if node == self.target:
+            if self.isTarget(node, self.target):
+                print('Цель достигнута')
                 return []
+            else:
+                print('Цель не достигнута')
             visited.add(node)
 
             for move in sorted(graph.getMoves(node), key=cost):
-                if move.node in visited:
+                if move['node'] in visited:
                     continue
                 path = dfs(graph, move['node'], visited)
                 if path is not None:
